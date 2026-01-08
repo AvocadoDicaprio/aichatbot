@@ -46,7 +46,8 @@ if prompt := st.chat_input("What is up?"):
         }
         
         try:
-            with requests.post(OLLAMA_URL, json=payload, stream=True) as response:
+            headers = {"ngrok-skip-browser-warning": "true"}
+            with requests.post(OLLAMA_URL, json=payload, headers=headers, stream=True) as response:
                 response.raise_for_status()
                 for line in response.iter_lines():
                     if line:
