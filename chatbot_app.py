@@ -3,7 +3,11 @@ import requests
 import json
 
 # Configuration
-OLLAMA_URL = "http://localhost:11434/api/chat"
+# Configuration
+# 1. Open a new terminal and run: ngrok http 11434
+# 2. Copy the "Forwarding" URL (starts with https://)
+# 3. Paste it below:
+OLLAMA_URL = "https://juana-nonforeclosing-rufus.ngrok-free.dev/api/chat"
 MODEL = "gpt-oss:20b"
 
 st.set_page_config(page_title="GPT-OSS Chatbot", page_icon="🤖")
