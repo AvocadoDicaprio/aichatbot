@@ -27,7 +27,7 @@ st.markdown("""
     /* Target the container of the generic stButton */
     div.stButton > button {
         position: fixed;
-        bottom: 20px;
+        bottom: 35px; /* Adjust height to match center of input box */
         z-index: 9999;
         background-color: #ff4b4b;
         color: white;
@@ -45,7 +45,7 @@ st.markdown("""
     /* Desktop: Align to the left of the central column (assuming ~700px width) */
     @media (min-width: 768px) {
         div.stButton > button {
-            left: calc(50% - 380px); 
+            left: calc(50% - 370px); /* Slightly closer to the input box */
         }
     }
     
@@ -53,7 +53,7 @@ st.markdown("""
     @media (max-width: 767px) {
         div.stButton > button {
             left: 10px;
-            bottom: 25px;
+            bottom: 35px;
         }
     }
 
