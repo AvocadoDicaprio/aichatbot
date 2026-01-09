@@ -27,8 +27,8 @@ st.markdown("""
     /* Target the container of the generic stButton */
     div.stButton > button {
         position: fixed;
-        bottom: 80px;
-        left: 20px;
+        bottom: 28px; /* Lower it to align with input box */
+        left: 15px;
         z-index: 9999;
         background-color: #ff4b4b;
         color: white;
