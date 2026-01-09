@@ -13,14 +13,22 @@ MODEL = "gpt-oss:20b"
 
 st.set_page_config(page_title="GPT-OSS Chatbot", page_icon="🤖")
 
-# Initialize chat history and search state
+# Initialize chat history, search state, and thinking process
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "enable_search" not in st.session_state:
     st.session_state.enable_search = False
+if "last_thinking_process" not in st.session_state:
+    st.session_state.last_thinking_process = "No thoughts yet."
 
 st.title("🤖 GPT-OSS Chatbot")
 st.caption(f"Powered by {MODEL} running locally via Ollama")
+
+# ... (CSS kept as is, but we skip to sidebar logic) ...
+# Sidebar Thinking Process Viewer
+with st.sidebar:
+    with st.expander("🧠 Thinking Process (Backend)", expanded=True):
+        st.code(st.session_state.last_thinking_process, language="markdown")
 
 # Custom CSS for floating buttons
 st.markdown("""
@@ -161,6 +169,17 @@ if prompt := st.chat_input("What is up?"):
                             {"role": "system", "content": rag_system_prompt},
                             {"role": "user", "content": rag_user_prompt}
                         ]
+                        
+                        # Update Thinking Process for UI
+                        st.session_state.last_thinking_process = f"""# 1. Search Query
+{prompt}
+
+# 2. Retrieved Context (Top 3)
+{context_str}
+
+# 3. Strict Instuction Sent to Model
+{rag_system_prompt}
+"""
                         
                 except Exception as e:
                     st.error(f"Search Error: {e}")
