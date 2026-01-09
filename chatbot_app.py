@@ -46,10 +46,10 @@ st.markdown("""
     }
 
     /* LEFT BUTTON: Clear (Targeting 1st Column in the Block) */
-    [data-testid="stHorizontalBlock"] [data-testid="column"]:nth-of-type(1) div.stButton > button {
+    [data-testid="column"]:nth-of-type(1) div.stButton > button {
         position: fixed !important;
         bottom: 50px !important;
-        left: calc(50% - 235px) !important;
+        left: calc(50% - 215px) !important;
         z-index: 999999 !important;
         display: flex !important;
         align-items: center !important;
@@ -57,12 +57,12 @@ st.markdown("""
     }
 
     /* RIGHT BUTTON: Search (Targeting 3rd Column in the Block) */
-    [data-testid="stHorizontalBlock"] [data-testid="column"]:nth-of-type(3) div.stButton > button {
+    [data-testid="column"]:nth-of-type(3) div.stButton > button {
         position: fixed !important;
         bottom: 50px !important;
         left: auto !important;
         right: auto !important;
-        left: calc(50% + 195px) !important;
+        left: calc(50% + 180px) !important;
         z-index: 999999 !important;
         display: flex !important;
         align-items: center !important;
@@ -103,7 +103,7 @@ with c3:
 if st.session_state.enable_search:
     st.markdown("""
     <style>
-    [data-testid="stHorizontalBlock"] [data-testid="column"]:nth-of-type(3) div.stButton > button {
+    [data-testid="column"]:nth-of-type(3) div.stButton > button {
         border-color: #4CAF50 !important;
         color: #4CAF50 !important;
         background-color: rgba(76, 175, 80, 0.1) !important;
@@ -139,7 +139,7 @@ if prompt := st.chat_input("What is up?"):
         payload_messages = list(st.session_state.messages)
         
         # Web Search Logic
-        if enable_search:
+        if st.session_state.enable_search:
             status_container = st.status("Searching the web...", expanded=False)
             try:
                 results = DDGS().text(prompt, max_results=3)
