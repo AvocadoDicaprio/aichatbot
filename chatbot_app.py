@@ -27,12 +27,19 @@ st.markdown("""
     /* Target the container of the generic stButton */
     div.stButton > button {
         position: fixed;
-        bottom: 80px; /* Sit about 80px up from bottom (above the input bar) */
+        bottom: 80px;
         left: 20px;
-        z-index: 9999; /* Ensure it sits on top */
-        background-color: #ff4b4b; /* Distinctive red color */
+        z-index: 9999;
+        background-color: #ff4b4b;
         color: white;
-        border-radius: 10px;
+        border-radius: 50%; /* Circle shape */
+        width: 40px; /* Small fixed width */
+        height: 40px; /* Small fixed height */
+        padding: 0;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         border: none;
         box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
     }
@@ -44,7 +51,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-if st.button("🗑️ Clear Chat"):
+if st.button("🗑️"):
     st.session_state.messages = []
     st.rerun()
 
