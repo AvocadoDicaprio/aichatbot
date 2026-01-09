@@ -46,9 +46,18 @@ if prompt := st.chat_input("What is up?"):
         }
         
         try:
-            headers = {"ngrok-skip-browser-warning": "true"}
+            # Add User-Agent to look like a browser, and the skip-warning header
+            headers = {
+                "ngrok-skip-browser-warning": "true",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
             with requests.post(OLLAMA_URL, json=payload, headers=headers, stream=True) as response:
+                if response.status_code != 200:
+                    st.error(f"Status Code: {response.status_code}")
+                    st.error(f"Response Text: {response.text}") # Show us the HTML/Error body
+                
                 response.raise_for_status()
+                
                 for line in response.iter_lines():
                     if line:
                         body = json.loads(line)
@@ -65,5 +74,7 @@ if prompt := st.chat_input("What is up?"):
             # Add assistant response to chat history
             st.session_state.messages.append({"role": "assistant", "content": full_response})
             
+        except requests.exceptions.RequestException as e:
+            st.error(f"Connection Error: {e}")
         except Exception as e:
-            st.error(f"Error connecting to Ollama: {e}")
+            st.error(f"General Error: {e}")
