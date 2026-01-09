@@ -12,28 +12,28 @@ MODEL = "gpt-oss:20b"
 
 st.set_page_config(page_title="GPT-OSS Chatbot", page_icon="🤖")
 
-st.title("🤖 GPT-OSS Chatbot")
-st.caption(f"Powered by {MODEL} running locally via Ollama")
-
-
 
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# Title and Clear Button Layout
+col1, col2 = st.columns([0.8, 0.2])
+with col1:
+    st.title("🤖 GPT-OSS Chatbot")
+    st.caption(f"Powered by {MODEL} running locally via Ollama")
+with col2:
+    # Adding some vertical spacer so it aligns better with the title
+    st.write("")
+    st.write("")
+    if st.button("🗑️ Clear",  type="primary"):
+        st.session_state.messages = []
+        st.rerun()
+
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
-
-def clear_chat_callback():
-    st.session_state.messages = []
-
-# Clear button (placed near the bottom)
-if len(st.session_state.messages) > 0:
-    if st.button("🗑️ Clear Chat History"):
-        st.session_state.messages = []
-        st.rerun()
 
 # Accept user input
 if prompt := st.chat_input("What is up?"):
