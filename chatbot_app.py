@@ -23,9 +23,17 @@ with st.sidebar:
         try:
             reader = PdfReader(uploaded_file)
             for page in reader.pages:
-                pdf_text += page.extract_text() + "\n"
-            st.success(f"PDF processed: {len(pdf_text)} chars")
-            st.info("Content added to conversation context.")
+                text = page.extract_text()
+                if text:
+                    pdf_text += text + "\n"
+            
+            if len(pdf_text) < 50:
+                st.warning(f"⚠️ Warning: Only {len(pdf_text)} characters extracted. This PDF might be an image/scanned document, which I cannot read.")
+            else:
+                st.success(f"PDF processed: {len(pdf_text)} chars")
+                with st.expander("View Extracted Text Preview"):
+                    st.text(pdf_text[:500] + "...")
+                st.info("Content added to conversation context.")
         except Exception as e:
             st.error(f"Error reading PDF: {e}")
 
