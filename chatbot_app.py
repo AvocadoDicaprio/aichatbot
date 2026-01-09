@@ -12,8 +12,14 @@ MODEL = "gpt-oss:20b"
 
 st.set_page_config(page_title="GPT-OSS Chatbot", page_icon="🤖")
 
-st.title("🤖 GPT-OSS Chatbot v1.1")
+st.title("🤖 GPT-OSS Chatbot")
 st.caption(f"Powered by {MODEL} running locally via Ollama")
+
+# Sidebar with Clear Button
+with st.sidebar:
+    if st.button("🗑️ Clear Chat History"):
+        st.session_state.messages = []
+        st.rerun()
 
 # Initialize chat history
 if "messages" not in st.session_state:
