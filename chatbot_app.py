@@ -108,7 +108,7 @@ div.stButton:nth-of-type(1) > button {
     left: calc(50% - 400px); /* Desktop Default */
 }
 
-/* Second button (Search) */
+/* Second button (Search) - Positioned on the RIGHT side of the input box */
 div.stButton:nth-of-type(2) > button {
     position: fixed;
     bottom: 50px;
@@ -121,7 +121,7 @@ div.stButton:nth-of-type(2) > button {
     height: 38px;
     font-size: 20px;
     padding: 0 !important;
-    left: calc(50% - 355px); /* 45px to the right */
+    left: calc(50% + 360px); /* Mirroring the left side (approx 720px gap between buttons) */
 }
 
 /* Hover effects */
@@ -132,8 +132,8 @@ div.stButton > button:hover {
 
 /* Mobile Overrides */
 @media (max-width: 767px) {
-    div.stButton:nth-of-type(1) > button { left: 5px; }
-    div.stButton:nth-of-type(2) > button { left: 50px; }
+    div.stButton:nth-of-type(1) > button { left: 5px; } /* Bin Left */
+    div.stButton:nth-of-type(2) > button { left: auto; right: 5px; } /* Search Right */
 }
 </style>
 """, unsafe_allow_html=True)
