@@ -15,11 +15,7 @@ st.set_page_config(page_title="GPT-OSS Chatbot", page_icon="🤖")
 st.title("🤖 GPT-OSS Chatbot")
 st.caption(f"Powered by {MODEL} running locally via Ollama")
 
-# Sidebar with Clear Button
-with st.sidebar:
-    if st.button("🗑️ Clear Chat History"):
-        st.session_state.messages = []
-        st.rerun()
+
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -29,6 +25,15 @@ if "messages" not in st.session_state:
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
+
+def clear_chat_callback():
+    st.session_state.messages = []
+
+# Clear button (placed near the bottom)
+if len(st.session_state.messages) > 0:
+    if st.button("🗑️ Clear Chat History"):
+        st.session_state.messages = []
+        st.rerun()
 
 # Accept user input
 if prompt := st.chat_input("What is up?"):
