@@ -2,15 +2,13 @@ import streamlit as st
 import requests
 import json
 from duckduckgo_search import DDGS
-import logging
+from datetime import datetime
 
-# Configure logging to file
-logging.basicConfig(
-    filename="chatbot_logs.txt",
-    level=logging.INFO,
-    format="%(asctime)s - %(message)s",
-    force=True
-)
+# Simple file logger function
+def log_to_file(msg):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open("chatbot_logs.txt", "a", encoding="utf-8") as f:
+        f.write(f"[{timestamp}] {msg}\n")
 
 # Configuration
 # Configuration
@@ -172,14 +170,14 @@ if prompt := st.chat_input("What is up?"):
                         ]
                         
                         # LOGGING (File)
-                        logging.info("="*50)
-                        logging.info(f"[DEBUG] Search Context ({len(results)} results):")
-                        logging.info(context_str)
-                        logging.info("="*50)
+                        log_to_file("="*50)
+                        log_to_file(f"[DEBUG] Search Context ({len(results)} results):")
+                        log_to_file(context_str)
+                        log_to_file("="*50)
                         
                 except Exception as e:
                     st.error(f"Search Error: {e}")
-                    logging.error(f"[ERROR] Search failed: {e}")
+                    log_to_file(f"[ERROR] Search failed: {e}")
 
         # Prepare the payload for Ollama
         payload = {
@@ -192,9 +190,9 @@ if prompt := st.chat_input("What is up?"):
         }
         
         # LOGGING (File)
-        logging.info(f"[DEBUG] Payload sent to Ollama model {MODEL}:")
-        logging.info(json.dumps(payload, indent=2))
-        logging.info("-" * 30)
+        log_to_file(f"[DEBUG] Payload sent to Ollama model {MODEL}:")
+        log_to_file(json.dumps(payload, indent=2))
+        log_to_file("-" * 30)
         
         try:
             # Add User-Agent to look like a browser, and the skip-warning header
