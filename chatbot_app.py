@@ -148,7 +148,7 @@ if prompt := st.chat_input("What is up?"):
                         
                         # Augment the last message with context
                         last_msg = payload_messages[-1]
-                        new_content = f"Answer the user's question using the following search results as context if relevant. If the results are not relevant, answer normally.\n\nSearch Results:\n{context_str}\n\nUser Question: {last_msg['content']}"
+                        new_content = f"STRICT INSTRUCTION: You are a truthful assistant. Answer the user's question ONLY using the provided Search Results below. Do NOT use your own prior knowledge. If the answer is not explicitly contained in the results, you MUST simply say 'I cannot find the answer in the provided search results.'\n\nSearch Results:\n{context_str}\n\nUser Question: {last_msg['content']}"
                         payload_messages[-1] = {"role": "user", "content": new_content}
                 except Exception as e:
                     st.error(f"Search Error: {e}")
