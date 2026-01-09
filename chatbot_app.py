@@ -27,7 +27,7 @@ st.markdown("""
     /* Target the container of the generic stButton */
     div.stButton > button {
         position: fixed;
-        bottom: 32px; /* Adjusted to approximate center of input row */
+        bottom: 50px; /* Raised to align center-to-center with input box */
         z-index: 9999;
         background-color: transparent;
         color: inherit;
@@ -54,7 +54,7 @@ st.markdown("""
     @media (max-width: 767px) {
         div.stButton > button {
             left: 5px;
-            bottom: 32px;
+            bottom: 50px;
         }
     }
 
