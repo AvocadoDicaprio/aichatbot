@@ -2,13 +2,6 @@ import streamlit as st
 import requests
 import json
 from duckduckgo_search import DDGS
-from datetime import datetime
-
-# Simple file logger function
-def log_to_file(msg):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open("debug_log.txt", "a") as f:
-        f.write(f"[{timestamp}] {msg}\n")
 
 # Configuration
 # Configuration
@@ -18,11 +11,7 @@ def log_to_file(msg):
 OLLAMA_URL = "https://juana-nonforeclosing-rufus.ngrok-free.dev/api/chat"
 MODEL = "gpt-oss:20b"
 
-# Log startup
-log_to_file("App started/reloaded")
-
 st.set_page_config(page_title="GPT-OSS Chatbot", page_icon="🤖")
-st.success("✅ App Reloaded! Check debug_log.txt")
 
 # Initialize chat history and search state
 if "messages" not in st.session_state:
@@ -173,15 +162,8 @@ if prompt := st.chat_input("What is up?"):
                             {"role": "user", "content": rag_user_prompt}
                         ]
                         
-                        # LOGGING (File)
-                        log_to_file("="*50)
-                        log_to_file(f"[DEBUG] Search Context ({len(results)} results):")
-                        log_to_file(context_str)
-                        log_to_file("="*50)
-                        
                 except Exception as e:
                     st.error(f"Search Error: {e}")
-                    log_to_file(f"[ERROR] Search failed: {e}")
 
         # Prepare the payload for Ollama
         payload = {
@@ -192,11 +174,6 @@ if prompt := st.chat_input("What is up?"):
                 "temperature": 0.0
             }
         }
-        
-        # LOGGING (File)
-        log_to_file(f"[DEBUG] Payload sent to Ollama model {MODEL}:")
-        log_to_file(json.dumps(payload, indent=2))
-        log_to_file("-" * 30)
         
         try:
             # Add User-Agent to look like a browser, and the skip-warning header
