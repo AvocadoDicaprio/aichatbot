@@ -21,6 +21,9 @@ with st.sidebar:
     uploaded_file = st.file_uploader("Upload a PDF", type="pdf")
     if uploaded_file is not None:
         try:
+            # Ensure file pointer is at start
+            uploaded_file.seek(0)
+            
             with pdfplumber.open(uploaded_file) as pdf:
                 for page in pdf.pages:
                     text = page.extract_text()
@@ -28,7 +31,7 @@ with st.sidebar:
                         pdf_text += text + "\n"
             
             if len(pdf_text) < 50:
-                st.warning(f"⚠️ Warning: Only {len(pdf_text)} characters extracted. This PDF might be an image/scanned document, specific text encoding, or encrypted.")
+                st.warning(f"⚠️ Warning: Only {len(pdf_text)} characters extracted from {len(pdf.pages)} pages. This PDF might be an image/scanned document, specific text encoding, or encrypted.")
             else:
                 st.success(f"PDF processed: {len(pdf_text)} chars found.")
                 with st.expander("View Extracted Text Preview"):
