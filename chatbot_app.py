@@ -27,7 +27,7 @@ st.markdown("""
     /* Target the container of the generic stButton */
     div.stButton > button {
         position: fixed;
-        bottom: 50px; /* Raised to align center-to-center with input box */
+        bottom: 50px;
         z-index: 9999;
         background-color: transparent;
         color: inherit;
@@ -36,6 +36,7 @@ st.markdown("""
         width: 38px;
         height: 38px;
         font-size: 20px;
+        padding: 0 !important; /* Force remove default padding */
         display: flex;
         align-items: center;
         justify-content: center;
