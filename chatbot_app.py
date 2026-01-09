@@ -47,14 +47,14 @@ st.markdown("""
 
     /* LEFT BUTTON: Clear (Inside the 1st Column) */
     [data-testid="column"]:nth-of-type(1) div.stButton > button {
-        left: calc(50% - 400px) !important;
+        left: calc(50% - 375px) !important; /* Positioned just left of input box */
     }
 
     /* RIGHT BUTTON: Search (Inside the 3rd Column) */
     [data-testid="column"]:nth-of-type(3) div.stButton > button {
         left: auto !important;
         right: auto !important;
-        left: calc(50% + 360px) !important;
+        left: calc(50% + 335px) !important; /* Positioned just right of input box */
     }
 
     /* Mobile Responsive Logic */
