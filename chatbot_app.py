@@ -10,12 +10,6 @@ from duckduckgo_search import DDGS
 # 3. Paste it below:
 OLLAMA_URL = "https://juana-nonforeclosing-rufus.ngrok-free.dev/api/chat"
 MODEL = "gpt-oss:20b"
-SYSTEM_PROMPT = """You are a grounded AI assistant.
-Your answers must be strictly based on the provided Search Results context.
-Do not use your own internal knowledge to create answers.
-Every answer must include the source (URL or Title) of the information.
-If the provided context does not contain the answer, state that you cannot answer due to lack of sources.
-"""
 
 st.set_page_config(page_title="GPT-OSS Chatbot", page_icon="🤖")
 
@@ -166,7 +160,7 @@ if prompt := st.chat_input("What is up?"):
         # Prepare the payload for Ollama
         payload = {
             "model": MODEL,
-            "messages": [{"role": "system", "content": SYSTEM_PROMPT}] + payload_messages,
+            "messages": payload_messages,
             "stream": True,
         }
         
