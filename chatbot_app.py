@@ -17,18 +17,41 @@ st.set_page_config(page_title="GPT-OSS Chatbot", page_icon="🤖")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Title and Clear Button Layout
-col1, col2 = st.columns([0.8, 0.2])
-with col1:
-    st.title("🤖 GPT-OSS Chatbot")
-    st.caption(f"Powered by {MODEL} running locally via Ollama")
-with col2:
-    # Adding some vertical spacer so it aligns better with the title
-    st.write("")
-    st.write("")
-    if st.button("🗑️ Clear",  type="primary"):
-        st.session_state.messages = []
-        st.rerun()
+
+st.title("🤖 GPT-OSS Chatbot")
+st.caption(f"Powered by {MODEL} running locally via Ollama")
+
+# Custom CSS to float the clear button at the bottom left
+st.markdown("""
+    <style>
+    /* Target the container of the generic stButton */
+    div.stButton > button {
+        position: fixed;
+        bottom: 80px; /* Sit about 80px up from bottom (above the input bar) */
+        left: 20px;
+        z-index: 9999; /* Ensure it sits on top */
+        background-color: #ff4b4b; /* Distinctive red color */
+        color: white;
+        border-radius: 10px;
+        border: none;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    }
+    div.stButton > button:hover {
+        background-color: #ff6b6b;
+        color: white;
+        border: none;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+if st.button("🗑️ Clear Chat"):
+    st.session_state.messages = []
+    st.rerun()
+
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
 
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
