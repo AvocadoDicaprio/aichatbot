@@ -25,130 +25,81 @@ st.caption(f"Powered by {MODEL} running locally via Ollama")
 # Custom CSS for floating buttons
 st.markdown("""
     <style>
-    /* Common style for floating buttons */
-    .floating-button {
-        position: fixed;
-        bottom: 50px;
-        z-index: 9999;
-        background-color: transparent;
-        color: inherit;
-        border: 1px solid rgba(128, 128, 128, 0.2);
-        border-radius: 4px;
-        width: 38px;
-        height: 38px;
-        font-size: 20px;
+    /* Global Base Style for Floating Buttons */
+    div.stButton > button {
+        position: fixed !important;
+        bottom: 50px !important;
+        z-index: 99999 !important;
+        width: 38px !important;
+        height: 38px !important;
         padding: 0 !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: none;
+        border-radius: 4px !important;
+        background-color: transparent !important;
+        border: 1px solid rgba(128, 128, 128, 0.2) !important;
+        box-shadow: none !important;
     }
     
-    /* Hover effect */
-    .floating-button:hover {
-        background-color: rgba(128, 128, 128, 0.1);
-        border: 1px solid rgba(128, 128, 128, 0.4);
-    }
-    
-    /* Specific positioning */
-    /* Clear Button (Left) */
-    .clear-btn {
-        left: calc(50% - 400px);
-    }
-    
-    /* Search Button (Right of Clear Button) */
-    .search-btn {
-        left: calc(50% - 355px); /* Spaced 45px to the right of clear btn */
-    }
-    
-    /* Active state for search button */
-    .search-active {
-        background-color: rgba(0, 255, 0, 0.1) !important;
-        border: 1px solid rgba(0, 255, 0, 0.5) !important;
-        color: #00AA00 !important;
+    /* Hover */
+    div.stButton > button:hover {
+        background-color: rgba(128, 128, 128, 0.1) !important;
+        border-color: rgba(128, 128, 128, 0.5) !important;
     }
 
-    /* Mobile adjustments */
-    @media (max-width: 767px) {
-        .clear-btn { left: 5px; bottom: 50px; }
-        .search-btn { left: 50px; bottom: 50px; }
+    /* LEFT BUTTON: Clear (The 1st button in the DOM usually) */
+    /* We can use the 'help' tooltip to target specific buttons if Streamlit renders it in DOM, 
+       but reliable targeting is nth-of-type for the wrapper. */
+    
+    div.stButton:nth-of-type(1) > button {
+        left: calc(50% - 400px) !important;
+    }
+
+    /* RIGHT BUTTON: Search (The 2nd button in the DOM) */
+    div.stButton:nth-of-type(2) > button {
+        left: auto !important;
+        left: calc(50% + 360px) !important;
+    }
+
+    /* Mobile Responsive Logic */
+    @media (max-width: 768px) {
+        div.stButton:nth-of-type(1) > button {
+            left: 10px !important;
+            bottom: 60px !important;
+        }
+        div.stButton:nth-of-type(2) > button {
+            left: auto !important;
+            right: 10px !important;
+            bottom: 60px !important;
+        }
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 1. Clear Button (Using visible label as ID effectively, wrapped in a div for positioning)
-# Streamlit buttons are hard to style individually without unique keys or containers. 
-# We will use columns to hack the position or just render them standard and use JS/CSS targeting.
-# Actually, the easiest way to CSS target specific buttons in Streamlit is using the specific element index usually, 
-# but that's brittle.
-# A robust way is to use empty container/html hack, OR just rely on "key" arguments and some luck.
-# Better yet: Let's use `st.columns` inside a container if possible? No, we need them fixed.
+# Render buttons in separate columns to ensure DOM separation logic applies cleanly
+# An invisible container at the top
+c1, c2, c3 = st.columns([1, 10, 1])
 
-# New Approach: 
-# We just render two buttons. Streamlit buttons render as `div.row-widget.stButton`.
-# We can use the `key` to identify them? No, keys don't appear in DOM.
-# We will use the nth-of-type selector in CSS.
-# First button = Clear. Second button = Search.
+with c1:
+    if st.button("🗑️", key="btn_clear", help="Clear Chat"):
+        st.session_state.messages = []
+        st.rerun()
 
-st.markdown("""
-<style>
-/* First button (Clear) */
-div.stButton:nth-of-type(1) > button {
-    position: fixed;
-    bottom: 50px;
-    z-index: 9999;
-    background-color: transparent;
-    color: inherit;
-    border: 1px solid rgba(128, 128, 128, 0.2);
-    border-radius: 4px;
-    width: 38px;
-    height: 38px;
-    font-size: 20px;
-    padding: 0 !important;
-    left: calc(50% - 400px); /* Desktop Default */
-}
+with c3:
+    search_icon = "🌐" if not st.session_state.enable_search else "✅"
+    if st.button(search_icon, key="btn_search", help="Toggle Search"):
+        st.session_state.enable_search = not st.session_state.enable_search
+        st.rerun()
 
-/* Second button (Search) - Positioned on the RIGHT side of the input box */
-div.stButton:nth-of-type(2) > button {
-    position: fixed;
-    bottom: 50px;
-    z-index: 9999;
-    background-color: transparent;
-    color: inherit;
-    border: 1px solid rgba(128, 128, 128, 0.2);
-    border-radius: 4px;
-    width: 38px;
-    height: 38px;
-    font-size: 20px;
-    padding: 0 !important;
-    left: calc(50% + 360px); /* Mirroring the left side (approx 720px gap between buttons) */
-}
-
-/* Hover effects */
-div.stButton > button:hover {
-    background-color: rgba(128, 128, 128, 0.1);
-    border: 1px solid rgba(128, 128, 128, 0.4);
-}
-
-/* Mobile Overrides */
-@media (max-width: 767px) {
-    div.stButton:nth-of-type(1) > button { left: 5px; } /* Bin Left */
-    div.stButton:nth-of-type(2) > button { left: auto; right: 5px; } /* Search Right */
-}
-</style>
-""", unsafe_allow_html=True)
-
-# Render buttons
-# Button 1: Clear
-if st.button("🗑️", help="Clear Chat"):
-    st.session_state.messages = []
-    st.rerun()
-
-# Button 2: Search Toggle
-search_icon = "🌐" if not st.session_state.enable_search else "✅"
-if st.button(search_icon, help="Toggle Web Search"):
-    st.session_state.enable_search = not st.session_state.enable_search
-    st.rerun()
+# Highlight Active Search State
+if st.session_state.enable_search:
+    st.markdown("""
+    <style>
+    div.stButton:nth-of-type(2) > button {
+        border-color: #4CAF50 !important;
+        color: #4CAF50 !important;
+        background-color: rgba(76, 175, 80, 0.1) !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
 # Apply active style conditionally if search is on
 if st.session_state.enable_search:
