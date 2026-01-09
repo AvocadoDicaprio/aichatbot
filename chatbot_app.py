@@ -31,7 +31,7 @@ with st.sidebar:
                         pdf_text += text + "\n"
             
             if len(pdf_text) < 50:
-                st.warning(f"⚠️ Warning: Only {len(pdf_text)} characters extracted from {len(pdf.pages)} pages. This PDF might be an image/scanned document, specific text encoding, or encrypted.")
+                st.warning(f"⚠️ Error: Detected {len(pdf.pages)} pages but found only {len(pdf_text)} text characters. This file is likely a SCANNED IMAGE (pixels only). Please upload a PDF with selectable text.")
             else:
                 st.success(f"PDF processed: {len(pdf_text)} chars found.")
                 with st.expander("View Extracted Text Preview"):
