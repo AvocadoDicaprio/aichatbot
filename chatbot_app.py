@@ -140,23 +140,22 @@ if prompt := st.chat_input("What is up?"):
         
         # Web Search Logic
         if st.session_state.enable_search:
-            status_container = st.status("Searching the web...", expanded=False)
-            try:
-                results = DDGS().text(prompt, max_results=3)
-                if results:
-                    context_str = "\n".join([f"- **{r['title']}**: {r['body']} ({r['href']})" for r in results])
-                    status_container.markdown(context_str)
-                    status_container.update(label="Search completed!", state="complete", expanded=False)
-                    
-                    # Augment the last message with context
-                    last_msg = payload_messages[-1]
-                    new_content = f"Answer the user's question using the following search results as context if relevant. If the results are not relevant, answer normally.\n\nSearch Results:\n{context_str}\n\nUser Question: {last_msg['content']}"
-                    payload_messages[-1] = {"role": "user", "content": new_content}
-                else:
-                    status_container.update(label="No web results found. Using model knowledge only.", state="complete")
-            except Exception as e:
-                status_container.update(label="Search failed", state="error")
-                st.error(f"Search Error: {e}")
+            with st.spinner("Searching the web..."):
+                try:
+                    results = DDGS().text(prompt, max_results=3)
+                    if results:
+                        context_str = "\n".join([f"- **{r['title']}**: {r['body']} ({r['href']})" for r in results])
+                        
+                        # Show results in a clean expander
+                        with st.expander("View Search Results", expanded=False):
+                            st.markdown(context_str)
+                        
+                        # Augment the last message with context
+                        last_msg = payload_messages[-1]
+                        new_content = f"Answer the user's question using the following search results as context if relevant. If the results are not relevant, answer normally.\n\nSearch Results:\n{context_str}\n\nUser Question: {last_msg['content']}"
+                        payload_messages[-1] = {"role": "user", "content": new_content}
+                except Exception as e:
+                    st.error(f"Search Error: {e}")
 
         # Prepare the payload for Ollama
         payload = {
