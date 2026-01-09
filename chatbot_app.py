@@ -45,27 +45,25 @@ st.markdown("""
         border-color: rgba(128, 128, 128, 0.5) !important;
     }
 
-    /* LEFT BUTTON: Clear (The 1st button in the DOM usually) */
-    /* We can use the 'help' tooltip to target specific buttons if Streamlit renders it in DOM, 
-       but reliable targeting is nth-of-type for the wrapper. */
-    
-    div.stButton:nth-of-type(1) > button {
+    /* LEFT BUTTON: Clear (Inside the 1st Column) */
+    [data-testid="column"]:nth-of-type(1) div.stButton > button {
         left: calc(50% - 400px) !important;
     }
 
-    /* RIGHT BUTTON: Search (The 2nd button in the DOM) */
-    div.stButton:nth-of-type(2) > button {
+    /* RIGHT BUTTON: Search (Inside the 3rd Column) */
+    [data-testid="column"]:nth-of-type(3) div.stButton > button {
         left: auto !important;
+        right: auto !important;
         left: calc(50% + 360px) !important;
     }
 
     /* Mobile Responsive Logic */
     @media (max-width: 768px) {
-        div.stButton:nth-of-type(1) > button {
+        [data-testid="column"]:nth-of-type(1) div.stButton > button {
             left: 10px !important;
             bottom: 60px !important;
         }
-        div.stButton:nth-of-type(2) > button {
+        [data-testid="column"]:nth-of-type(3) div.stButton > button {
             left: auto !important;
             right: 10px !important;
             bottom: 60px !important;
@@ -89,11 +87,11 @@ with c3:
         st.session_state.enable_search = not st.session_state.enable_search
         st.rerun()
 
-# Highlight Active Search State
+# Highlight Active Search State (Targeting the 3rd column button)
 if st.session_state.enable_search:
     st.markdown("""
     <style>
-    div.stButton:nth-of-type(2) > button {
+    [data-testid="column"]:nth-of-type(3) div.stButton > button {
         border-color: #4CAF50 !important;
         color: #4CAF50 !important;
         background-color: rgba(76, 175, 80, 0.1) !important;
