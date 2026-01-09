@@ -2,6 +2,15 @@ import streamlit as st
 import requests
 import json
 from duckduckgo_search import DDGS
+import logging
+
+# Configure logging to file
+logging.basicConfig(
+    filename="chatbot_logs.txt",
+    level=logging.INFO,
+    format="%(asctime)s - %(message)s",
+    force=True
+)
 
 # Configuration
 # Configuration
@@ -162,15 +171,15 @@ if prompt := st.chat_input("What is up?"):
                             {"role": "user", "content": rag_user_prompt}
                         ]
                         
-                        # LOGGING (Backend only)
-                        print("\n" + "="*50)
-                        print(f"[DEBUG] Search Context ({len(results)} results):")
-                        print(context_str)
-                        print("="*50 + "\n")
+                        # LOGGING (File)
+                        logging.info("="*50)
+                        logging.info(f"[DEBUG] Search Context ({len(results)} results):")
+                        logging.info(context_str)
+                        logging.info("="*50)
                         
                 except Exception as e:
                     st.error(f"Search Error: {e}")
-                    print(f"[ERROR] Search failed: {e}")
+                    logging.error(f"[ERROR] Search failed: {e}")
 
         # Prepare the payload for Ollama
         payload = {
@@ -182,10 +191,10 @@ if prompt := st.chat_input("What is up?"):
             }
         }
         
-        # LOGGING (Backend only)
-        print(f"[DEBUG] Payload sent to Ollama model {MODEL}:")
-        print(json.dumps(payload, indent=2))
-        print("-" * 30)
+        # LOGGING (File)
+        logging.info(f"[DEBUG] Payload sent to Ollama model {MODEL}:")
+        logging.info(json.dumps(payload, indent=2))
+        logging.info("-" * 30)
         
         try:
             # Add User-Agent to look like a browser, and the skip-warning header
