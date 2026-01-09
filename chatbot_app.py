@@ -2,7 +2,6 @@ import streamlit as st
 import requests
 import json
 from duckduckgo_search import DDGS
-import pdfplumber
 
 # Configuration
 # Configuration
@@ -13,32 +12,6 @@ OLLAMA_URL = "https://juana-nonforeclosing-rufus.ngrok-free.dev/api/chat"
 MODEL = "gpt-oss:20b"
 
 st.set_page_config(page_title="GPT-OSS Chatbot", page_icon="🤖")
-
-# PDF Upload & Processing
-pdf_text = ""
-with st.sidebar:
-    st.header("📄 Document Upload")
-    uploaded_file = st.file_uploader("Upload a PDF", type="pdf")
-    if uploaded_file is not None:
-        try:
-            # Ensure file pointer is at start
-            uploaded_file.seek(0)
-            
-            with pdfplumber.open(uploaded_file) as pdf:
-                for page in pdf.pages:
-                    text = page.extract_text()
-                    if text:
-                        pdf_text += text + "\n"
-            
-            if len(pdf_text) < 50:
-                st.warning(f"⚠️ Error: Detected {len(pdf.pages)} pages but found only {len(pdf_text)} text characters. This file is likely a SCANNED IMAGE (pixels only). Please upload a PDF with selectable text.")
-            else:
-                st.success(f"PDF processed: {len(pdf_text)} chars found.")
-                with st.expander("View Extracted Text Preview"):
-                    st.text(pdf_text[:500] + "...")
-                st.info("Content added to conversation context.")
-        except Exception as e:
-            st.error(f"Error reading PDF: {e}")
 
 # Initialize chat history and search state
 if "messages" not in st.session_state:
@@ -165,11 +138,6 @@ if prompt := st.chat_input("What is up?"):
         # Prepare messages for payload (copy to avoid modifying display)
         payload_messages = list(st.session_state.messages)
         
-        # Inject PDF Context if available
-        if pdf_text:
-            system_prompt = f"You are a helpful AI chatbot.\n\nCONTEXT FROM UPLOADED PDF:\n{pdf_text[:10000]}\n\nUse this context to answer the user's questions if relevant."
-            payload_messages.insert(0, {"role": "system", "content": system_prompt})
-        
         # Web Search Logic
         if st.session_state.enable_search:
             with st.spinner("Searching the web..."):
@@ -193,7 +161,7 @@ if prompt := st.chat_input("What is up?"):
         payload = {
             "model": MODEL,
             "messages": payload_messages,
-            "stream": True 
+            "stream": True,
         }
         
         try:
