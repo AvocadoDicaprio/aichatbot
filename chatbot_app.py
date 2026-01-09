@@ -161,8 +161,16 @@ if prompt := st.chat_input("What is up?"):
                             {"role": "system", "content": rag_system_prompt},
                             {"role": "user", "content": rag_user_prompt}
                         ]
+                        
+                        # LOGGING (Backend only)
+                        print("\n" + "="*50)
+                        print(f"[DEBUG] Search Context ({len(results)} results):")
+                        print(context_str)
+                        print("="*50 + "\n")
+                        
                 except Exception as e:
                     st.error(f"Search Error: {e}")
+                    print(f"[ERROR] Search failed: {e}")
 
         # Prepare the payload for Ollama
         payload = {
@@ -173,6 +181,11 @@ if prompt := st.chat_input("What is up?"):
                 "temperature": 0.0
             }
         }
+        
+        # LOGGING (Backend only)
+        print(f"[DEBUG] Payload sent to Ollama model {MODEL}:")
+        print(json.dumps(payload, indent=2))
+        print("-" * 30)
         
         try:
             # Add User-Agent to look like a browser, and the skip-warning header
