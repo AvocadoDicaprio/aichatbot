@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import json
+from duckduckgo_search import DDGS
 
 # Configuration
 # Configuration
@@ -12,6 +13,9 @@ MODEL = "gpt-oss:20b"
 
 st.set_page_config(page_title="GPT-OSS Chatbot", page_icon="🤖")
 
+with st.sidebar:
+    st.header("Settings")
+    enable_search = st.toggle("Enable Web Search 🌐", value=False, help="Turn this on to let the bot search the web for answers.")
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -64,12 +68,6 @@ st.markdown("""
         color: inherit;
         border: 1px solid rgba(128, 128, 128, 0.4);
     }
-
-    div.stButton > button:hover {
-        background-color: #ff6b6b;
-        color: white;
-        border: none;
-    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -101,10 +99,33 @@ if prompt := st.chat_input("What is up?"):
         message_placeholder = st.empty()
         full_response = ""
         
+        # Prepare messages for payload (copy to avoid modifying display)
+        payload_messages = list(st.session_state.messages)
+        
+        # Web Search Logic
+        if enable_search:
+            status_container = st.status("Searching the web...", expanded=False)
+            try:
+                results = DDGS().text(prompt, max_results=3)
+                if results:
+                    context_str = "\n".join([f"- **{r['title']}**: {r['body']} ({r['href']})" for r in results])
+                    status_container.markdown(context_str)
+                    status_container.update(label="Search completed!", state="complete", expanded=False)
+                    
+                    # Augment the last message with context
+                    last_msg = payload_messages[-1]
+                    new_content = f"Answer the user's question using the following search results as context if relevant. If the results are not relevant, answer normally.\n\nSearch Results:\n{context_str}\n\nUser Question: {last_msg['content']}"
+                    payload_messages[-1] = {"role": "user", "content": new_content}
+                else:
+                    status_container.update(label="No results found.", state="complete")
+            except Exception as e:
+                status_container.update(label="Search failed", state="error")
+                st.error(f"Search Error: {e}")
+
         # Prepare the payload for Ollama
         payload = {
             "model": MODEL,
-            "messages": st.session_state.messages,
+            "messages": payload_messages,
             "stream": True 
         }
         
