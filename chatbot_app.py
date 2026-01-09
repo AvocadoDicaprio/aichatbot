@@ -7,7 +7,7 @@ from datetime import datetime
 # Simple file logger function
 def log_to_file(msg):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open("chatbot_logs.txt", "a", encoding="utf-8") as f:
+    with open("debug_log.txt", "a", encoding="utf-8") as f:
         f.write(f"[{timestamp}] {msg}\n")
 
 # Configuration
@@ -18,7 +18,11 @@ def log_to_file(msg):
 OLLAMA_URL = "https://juana-nonforeclosing-rufus.ngrok-free.dev/api/chat"
 MODEL = "gpt-oss:20b"
 
+# Log startup
+log_to_file("App started/reloaded")
+
 st.set_page_config(page_title="GPT-OSS Chatbot", page_icon="🤖")
+st.success("✅ App Reloaded! Check debug_log.txt")
 
 # Initialize chat history and search state
 if "messages" not in st.session_state:
