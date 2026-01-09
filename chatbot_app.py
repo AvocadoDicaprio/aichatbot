@@ -27,22 +27,36 @@ st.markdown("""
     /* Target the container of the generic stButton */
     div.stButton > button {
         position: fixed;
-        bottom: 28px; /* Lower it to align with input box */
-        left: 15px;
+        bottom: 20px;
         z-index: 9999;
         background-color: #ff4b4b;
         color: white;
-        border-radius: 50%; /* Circle shape */
-        width: 40px; /* Small fixed width */
-        height: 40px; /* Small fixed height */
-        padding: 0;
-        font-size: 20px;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
         border: none;
         box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
     }
+    
+    /* Desktop: Align to the left of the central column (assuming ~700px width) */
+    @media (min-width: 768px) {
+        div.stButton > button {
+            left: calc(50% - 380px); 
+        }
+    }
+    
+    /* Mobile: Stick to the left edge */
+    @media (max-width: 767px) {
+        div.stButton > button {
+            left: 10px;
+            bottom: 25px;
+        }
+    }
+
     div.stButton > button:hover {
         background-color: #ff6b6b;
         color: white;
