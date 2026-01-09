@@ -10,6 +10,9 @@ from duckduckgo_search import DDGS
 # 3. Paste it below:
 OLLAMA_URL = "https://juana-nonforeclosing-rufus.ngrok-free.dev/api/chat"
 MODEL = "gpt-oss:20b"
+SYSTEM_PROMPT = """You are a helpful AI assistant.
+Answer the user's questions clearly and concisely.
+"""
 
 st.set_page_config(page_title="GPT-OSS Chatbot", page_icon="🤖")
 
@@ -160,7 +163,7 @@ if prompt := st.chat_input("What is up?"):
         # Prepare the payload for Ollama
         payload = {
             "model": MODEL,
-            "messages": payload_messages,
+            "messages": [{"role": "system", "content": SYSTEM_PROMPT}] + payload_messages,
             "stream": True,
         }
         
