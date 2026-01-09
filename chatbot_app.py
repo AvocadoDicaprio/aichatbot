@@ -146,10 +146,6 @@ if prompt := st.chat_input("What is up?"):
                     if results:
                         context_str = "\n".join([f"- **{r['title']}**: {r['body']} ({r['href']})" for r in results])
                         
-                        # Show results in a clean expander
-                        with st.expander("View Search Results", expanded=False):
-                            st.markdown(context_str)
-                        
                         # Augment the last message with context
                         last_msg = payload_messages[-1]
                         new_content = f"Answer the user's question using the following search results as context if relevant. If the results are not relevant, answer normally.\n\nSearch Results:\n{context_str}\n\nUser Question: {last_msg['content']}"
