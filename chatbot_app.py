@@ -2,13 +2,6 @@ import streamlit as st
 import requests
 import json
 from duckduckgo_search import DDGS
-from datetime import datetime
-
-# Simple file logger function
-def log_to_file(msg):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open("debug_log.txt", "a", encoding="utf-8-sig") as f:
-        f.write(f"[{timestamp}] {msg}\n")
 
 # Configuration
 # Configuration
@@ -18,9 +11,6 @@ def log_to_file(msg):
 OLLAMA_URL = "https://juana-nonforeclosing-rufus.ngrok-free.dev/api/chat"
 MODEL = "gpt-oss:20b"
 
-# Log startup
-log_to_file("App started/reloaded")
-
 st.set_page_config(page_title="GPT-OSS Chatbot", page_icon="🤖")
 
 # Initialize chat history, search state, and thinking process
@@ -28,9 +18,18 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 if "enable_search" not in st.session_state:
     st.session_state.enable_search = False
+if "last_thinking_process" not in st.session_state:
+    st.session_state.last_thinking_process = "No search performed yet."
 
 st.title("🤖 GPT-OSS Chatbot")
 st.caption(f"Powered by {MODEL} running locally via Ollama")
+
+# Sidebar for Admin Debugging
+with st.sidebar:
+    st.markdown("### ⚙️ Admin")
+    if st.checkbox("Show Thinking Process", value=False):
+        st.info("Backend Thinking Process:")
+        st.code(st.session_state.last_thinking_process, language="markdown")
 
 # Custom CSS for floating buttons
 st.markdown("""
@@ -172,15 +171,19 @@ if prompt := st.chat_input("What is up?"):
                             {"role": "user", "content": rag_user_prompt}
                         ]
                         
-                        # LOGGING (File)
-                        log_to_file("="*50)
-                        log_to_file(f"[DEBUG] Search Context ({len(results)} results):")
-                        log_to_file(context_str)
-                        log_to_file("="*50)
+                        # SAVE BACKEND LOGIC TO STATE (Hidden by default)
+                        st.session_state.last_thinking_process = f"""**System Instruction:**
+{rag_system_prompt}
+
+**User Query:**
+{prompt}
+
+**Retrieved Context (Top 3):**
+{context_str}
+"""
                         
                 except Exception as e:
                     st.error(f"Search Error: {e}")
-                    log_to_file(f"[ERROR] Search failed: {e}")
 
         # Prepare the payload for Ollama
         payload = {
@@ -191,11 +194,6 @@ if prompt := st.chat_input("What is up?"):
                 "temperature": 0.0
             }
         }
-        
-        # LOGGING (File)
-        log_to_file(f"[DEBUG] Payload sent to Ollama model {MODEL}:")
-        log_to_file(json.dumps(payload, indent=2))
-        log_to_file("-" * 30)
         
         try:
             # Add User-Agent to look like a browser, and the skip-warning header
