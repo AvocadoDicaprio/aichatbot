@@ -45,16 +45,28 @@ st.markdown("""
         border-color: rgba(128, 128, 128, 0.5) !important;
     }
 
-    /* LEFT BUTTON: Clear (Inside the 1st Column) */
-    [data-testid="column"]:nth-of-type(1) div.stButton > button {
-        left: calc(50% - 215px) !important; /* Hugging the left edge tightly */
+    /* LEFT BUTTON: Clear (Targeting 1st Column in the Block) */
+    [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(1) div.stButton > button {
+        position: fixed !important;
+        bottom: 50px !important;
+        left: calc(50% - 300px) !important;
+        z-index: 999999 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
-    /* RIGHT BUTTON: Search (Inside the 3rd Column) */
-    [data-testid="column"]:nth-of-type(3) div.stButton > button {
+    /* RIGHT BUTTON: Search (Targeting 3rd Column in the Block) */
+    [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(3) div.stButton > button {
+        position: fixed !important;
+        bottom: 50px !important;
         left: auto !important;
         right: auto !important;
-        left: calc(50% + 180px) !important; /* Hugging the right edge tightly */
+        left: calc(50% + 260px) !important;
+        z-index: 999999 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
     /* Mobile Responsive Logic */
