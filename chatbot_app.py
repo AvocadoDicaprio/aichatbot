@@ -45,8 +45,8 @@ st.markdown("""
     /* Desktop: Align to the left of the central column */
     @media (min-width: 768px) {
         div.stButton > button {
-            /* Shift further left to avoid overlapping the input box */
-             left: calc(50% - 440px);
+            /* Tighten gap: shift back right slightly */
+             left: calc(50% - 400px);
         }
     }
     
