@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 import json
 from duckduckgo_search import DDGS
+from pypdf import PdfReader
 
 # Configuration
 # Configuration
@@ -12,6 +13,21 @@ OLLAMA_URL = "https://juana-nonforeclosing-rufus.ngrok-free.dev/api/chat"
 MODEL = "gpt-oss:20b"
 
 st.set_page_config(page_title="GPT-OSS Chatbot", page_icon="🤖")
+
+# PDF Upload & Processing
+pdf_text = ""
+with st.sidebar:
+    st.header("📄 Document Upload")
+    uploaded_file = st.file_uploader("Upload a PDF", type="pdf")
+    if uploaded_file is not None:
+        try:
+            reader = PdfReader(uploaded_file)
+            for page in reader.pages:
+                pdf_text += page.extract_text() + "\n"
+            st.success(f"PDF processed: {len(pdf_text)} chars")
+            st.info("Content added to conversation context.")
+        except Exception as e:
+            st.error(f"Error reading PDF: {e}")
 
 # Initialize chat history and search state
 if "messages" not in st.session_state:
@@ -137,6 +153,11 @@ if prompt := st.chat_input("What is up?"):
         
         # Prepare messages for payload (copy to avoid modifying display)
         payload_messages = list(st.session_state.messages)
+        
+        # Inject PDF Context if available
+        if pdf_text:
+            system_prompt = f"You are a helpful AI chatbot.\n\nCONTEXT FROM UPLOADED PDF:\n{pdf_text[:10000]}\n\nUse this context to answer the user's questions if relevant."
+            payload_messages.insert(0, {"role": "system", "content": system_prompt})
         
         # Web Search Logic
         if st.session_state.enable_search:
