@@ -153,7 +153,7 @@ if prompt := st.chat_input("What is up?"):
                     new_content = f"Answer the user's question using the following search results as context if relevant. If the results are not relevant, answer normally.\n\nSearch Results:\n{context_str}\n\nUser Question: {last_msg['content']}"
                     payload_messages[-1] = {"role": "user", "content": new_content}
                 else:
-                    status_container.update(label="No results found.", state="complete")
+                    status_container.update(label="No web results found. Using model knowledge only.", state="complete")
             except Exception as e:
                 status_container.update(label="Search failed", state="error")
                 st.error(f"Search Error: {e}")
