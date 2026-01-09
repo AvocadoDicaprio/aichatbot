@@ -150,7 +150,7 @@ if prompt := st.chat_input("What is up?"):
                         last_msg_content = payload_messages[-1]['content']
                         
                         # STRICT System Prompt
-                        rag_system_prompt = "You are a grounding assistant. You must answer the user's question ONLY using the provided Context below. If the answer is not in the Context, say 'I cannot find the answer in the provided context.' Do NOT explain your plan. Do NOT show your thinking. Answer directly. Do NOT use your own knowledge or training data."
+                        rag_system_prompt = "You are a grounding assistant. You must answer the user's question ONLY using the provided Context below. If the answer is not in the Context, say 'I cannot find the answer in the provided context.' DO NOT EXPLAIN YOUR PLAN. DO NOT SHOW YOUR THINKING. ANSWER DIRECTLY. DO NOT USE YOUR OWN KNOWLEDGE."
                         
                         # Contextual User Prompt
                         rag_user_prompt = f"Context:\n{context_str}\n\nQuestion: {last_msg_content}"
