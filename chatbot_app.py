@@ -146,10 +146,21 @@ if prompt := st.chat_input("What is up?"):
                     if results:
                         context_str = "\n".join([f"- **{r['title']}**: {r['body']} ({r['href']})" for r in results])
                         
-                        # Augment the last message with context
-                        last_msg = payload_messages[-1]
-                        new_content = f"STRICT INSTRUCTION: You are a truthful assistant. Answer the user's question ONLY using the provided Search Results below. Do NOT use your own prior knowledge. If the answer is not explicitly contained in the results, you MUST simply say 'I cannot find the answer in the provided search results.'\n\nSearch Results:\n{context_str}\n\nUser Question: {last_msg['content']}"
-                        payload_messages[-1] = {"role": "user", "content": new_content}
+                        # Augment the messages for RAG
+                        last_msg_content = payload_messages[-1]['content']
+                        
+                        # STRICT System Prompt
+                        rag_system_prompt = "You are a grounding assistant. You must answer the user's question ONLY using the provided Context below. If the answer is not in the Context, say 'I cannot find the answer in the provided context.' Do NOT use your own knowledge or training data."
+                        
+                        # Contextual User Prompt
+                        rag_user_prompt = f"Context:\n{context_str}\n\nQuestion: {last_msg_content}"
+                        
+                        # Replace the logic: specific system role + explicit context format
+                        # We will make a new list to enforce this strict structure for this turn
+                        payload_messages = [
+                            {"role": "system", "content": rag_system_prompt},
+                            {"role": "user", "content": rag_user_prompt}
+                        ]
                 except Exception as e:
                     st.error(f"Search Error: {e}")
 
@@ -158,6 +169,9 @@ if prompt := st.chat_input("What is up?"):
             "model": MODEL,
             "messages": payload_messages,
             "stream": True,
+            "options": {
+                "temperature": 0.0
+            }
         }
         
         try:
