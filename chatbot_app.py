@@ -27,34 +27,41 @@ st.markdown("""
     /* Target the container of the generic stButton */
     div.stButton > button {
         position: fixed;
-        bottom: 45px; /* Raised to align center-to-center with input box */
+        bottom: 32px; /* Adjusted to approximate center of input row */
         z-index: 9999;
-        background-color: #ff4b4b;
-        color: white;
-        border-radius: 50%;
-        width: 35px;
-        height: 35px;
-        font-size: 18px;
+        background-color: transparent;
+        color: inherit;
+        border: 1px solid rgba(128, 128, 128, 0.2);
+        border-radius: 4px;
+        width: 38px;
+        height: 38px;
+        font-size: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border: none;
-        box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+        box-shadow: none;
     }
     
-    /* Desktop: Align to the left of the central column (assuming ~700px width) */
+    /* Desktop: Align to the left of the central column */
     @media (min-width: 768px) {
         div.stButton > button {
-            left: calc(50% - 375px); /* Adjusted to sit snugly next to input */
+            /* Position it just to the left of the standard main block width (~730px) */
+             left: calc(50% - 375px);
         }
     }
     
     /* Mobile: Stick to the left edge */
     @media (max-width: 767px) {
         div.stButton > button {
-            left: 10px;
-            bottom: 45px;
+            left: 5px;
+            bottom: 32px;
         }
+    }
+
+    div.stButton > button:hover {
+        background-color: rgba(128, 128, 128, 0.1);
+        color: inherit;
+        border: 1px solid rgba(128, 128, 128, 0.4);
     }
 
     div.stButton > button:hover {
