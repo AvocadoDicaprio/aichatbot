@@ -7,7 +7,7 @@ from datetime import datetime
 # Simple file logger function
 def log_to_file(msg):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open("debug_log.txt", "a") as f:
+    with open("debug_log.txt", "a", encoding="utf-8-sig") as f:
         f.write(f"[{timestamp}] {msg}\n")
 
 # Configuration
