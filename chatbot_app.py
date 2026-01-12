@@ -15,33 +15,21 @@ def perform_search(query, debug_container=None):
         if debug_container: debug_container.caption("Attempting Google Search...")
         g_results = list(google_search(query, num_results=3, advanced=True))
         if g_results:
+            if debug_container: debug_container.success("✅ Results found via Google Search")
             return [{'title': r.title, 'body': r.description, 'href': r.url} for r in g_results]
     except Exception as e:
         if debug_container: debug_container.warning(f"Google backend failed: {e}")
 
-    # Attempt 2: API Backend (Fastest DDG)
+    # Attempt 2: API Backend (Strictly HK Region, Long Timeout)
+    # We removed 'Lite'/'HTML' backends because they return spam/garbage.
     try:
-        if debug_container: debug_container.caption("Attempting Search (API)...")
-        results = DDGS(timeout=30).text(query, max_results=3, backend="api")
-        if results: return results
+        if debug_container: debug_container.caption("Attempting Search (DDG API - HK Region)...")
+        results = DDGS(timeout=60).text(query, max_results=3, backend="api", region="hk-en")
+        if results: 
+            if debug_container: debug_container.success("✅ Results found via DDG API (HK)")
+            return results
     except Exception as e:
-        if debug_container: debug_container.warning(f"API backend failed: {e}")
-
-    # Attempt 3: HTML Backend (Scraping, Good Quality)
-    try:
-        if debug_container: debug_container.caption("Attempting Search (HTML)...")
-        results = DDGS(timeout=30).text(query, max_results=3, backend="html")
-        if results: return results
-    except Exception as e:
-        if debug_container: debug_container.warning(f"HTML backend failed: {e}")
-
-    # Attempt 4: Lite Backend (Last Resort, can be low quality)
-    try:
-        if debug_container: debug_container.caption("Attempting Search (Lite)...")
-        results = DDGS(timeout=30).text(query, max_results=3, backend="lite")
-        if results: return results
-    except Exception as e:
-        if debug_container: debug_container.warning(f"Lite backend failed: {e}")
+        if debug_container: debug_container.warning(f"DDG API backend failed: {e}")
     
     return []
 
