@@ -17,9 +17,7 @@ st.set_page_config(page_title="GPT-OSS Chatbot", page_icon="🤖")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "enable_search" not in st.session_state:
-    st.session_state.enable_search = False
-if "last_thinking_process" not in st.session_state:
-    st.session_state.last_thinking_process = "No search performed yet."
+    st.session_state.enable_search = True  # Default to ON
 
 st.title("🤖 GPT-OSS Chatbot")
 st.caption(f"Powered by {MODEL} running locally via Ollama")
@@ -103,7 +101,7 @@ with c1:
         st.rerun()
 
 with c3:
-    search_icon = "🌐" if not st.session_state.enable_search else "✅"
+    search_icon = "✅" if st.session_state.enable_search else "⬜"
     if st.button(search_icon, key="btn_search", help="Toggle Search"):
         st.session_state.enable_search = not st.session_state.enable_search
         st.rerun()
