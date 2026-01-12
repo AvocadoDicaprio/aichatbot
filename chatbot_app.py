@@ -154,7 +154,15 @@ if prompt := st.chat_input("What is up?"):
         if st.session_state.enable_search:
             with st.spinner("Searching the web..."):
                 try:
-                    results = DDGS().text(prompt, max_results=3)
+                    # Try standard search first
+                    try:
+                        results = DDGS().text(prompt, max_results=3)
+                    except Exception as e_standard:
+                        # If standard fails, try LITE backend (fallback)
+                        if show_debug:
+                             debug_container.warning(f"Standard search timed out ({e_standard}). Retrying with Lite backend...")
+                        results = DDGS().text(prompt, max_results=3, backend="lite")
+
                     if results:
                         context_str = "\n".join([f"- **{r['title']}**: {r['body']} ({r['href']})" for r in results])
                         
