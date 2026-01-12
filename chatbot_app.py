@@ -18,6 +18,8 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 if "enable_search" not in st.session_state:
     st.session_state.enable_search = True  # Default to ON
+if "last_thinking_process" not in st.session_state:
+    st.session_state.last_thinking_process = "No search performed yet."
 
 st.title("🤖 GPT-OSS Chatbot")
 st.caption(f"Powered by {MODEL} running locally via Ollama")
