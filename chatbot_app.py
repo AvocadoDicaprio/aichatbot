@@ -154,9 +154,10 @@ if prompt := st.chat_input("What is up?"):
         if st.session_state.enable_search:
             with st.spinner("Searching the web..."):
                 try:
-                    # 'Lite' backend is the only one confirmed working in this environment.
-                    # 'hk-en' ensures we get local Hong Kong results, not global generic ones.
-                    results = DDGS().text(prompt, max_results=3, region="hk-en", backend="lite")
+                    # 'Lite' backend is the only one confirmed working.
+                    # Removed region param to avoid timeouts, relying on query terms for relevance.
+                    # Increased timeout to 20s.
+                    results = DDGS(timeout=20).text(prompt, max_results=3, backend="lite")
 
                     if results:
                         context_str = "\n".join([f"- **{r['title']}**: {r['body']} ({r['href']})" for r in results])
