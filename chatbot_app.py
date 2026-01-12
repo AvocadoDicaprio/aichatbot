@@ -39,7 +39,7 @@ def manual_search(query, debug_container=None):
         # Each result is in a div with class 'result' (or similar structure)
         # We look for links in .result__title
         
-        for result in soup.find_all('div', class_='result', limit=10):
+        for result in soup.find_all('div', class_='result', limit=5):
             title_tag = result.find('a', class_='result__a')
             snippet_tag = result.find('a', class_='result__snippet')
             
