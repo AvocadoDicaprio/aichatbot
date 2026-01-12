@@ -25,11 +25,14 @@ st.title("🤖 GPT-OSS Chatbot")
 st.caption(f"Powered by {MODEL} running locally via Ollama")
 
 # Sidebar for Admin Debugging
-with st.sidebar:
-    st.markdown("### ⚙️ Admin")
-    if st.checkbox("Show Thinking Process", value=False):
-        st.info("Backend Thinking Process:")
-        st.code(st.session_state.last_thinking_process, language="markdown")
+st.sidebar.markdown("### ⚙️ Admin")
+show_debug = st.sidebar.checkbox("Show Thinking Process", value=False)
+debug_container = st.sidebar.empty()
+
+# Initial render of the container
+if show_debug:
+    debug_container.info("Backend Thinking Process:")
+    debug_container.code(st.session_state.last_thinking_process, language="markdown")
 
 # Custom CSS for floating buttons
 st.markdown("""
@@ -181,12 +184,19 @@ if prompt := st.chat_input("What is up?"):
 **Retrieved Context (Top 3):**
 {context_str}
 """
+                        if show_debug:
+                             debug_container.code(st.session_state.last_thinking_process, language="markdown")
+
                     else:
                         st.session_state.last_thinking_process = f"**Search Query:** {prompt}\n\n**Result:** No results found."
+                        if show_debug:
+                             debug_container.code(st.session_state.last_thinking_process, language="markdown")
 
                 except Exception as e:
                     st.error(f"Search Error: {e}")
                     st.session_state.last_thinking_process = f"**Search Query:** {prompt}\n\n**ERROR:** {e}"
+                    if show_debug:
+                             debug_container.code(st.session_state.last_thinking_process, language="markdown")
 
         # Prepare the payload for Ollama
         payload = {
