@@ -10,15 +10,7 @@ def perform_search(query, debug_container=None):
     """
     results = []
     
-    # Attempt 1: API Backend (Fastest, Best)
-    try:
-        if debug_container: debug_container.caption("Attempting Search (API)...")
-        results = DDGS(timeout=30).text(query, max_results=3, backend="api")
-        if results: return results
-    except Exception as e:
-        if debug_container: debug_container.warning(f"API backend failed: {e}")
-
-    # Attempt 2: Google Search (High Quality Backup)
+    # Attempt 1: Google Search (Primary High Quality)
     try:
         if debug_container: debug_container.caption("Attempting Google Search...")
         g_results = list(google_search(query, num_results=3, advanced=True))
@@ -26,6 +18,14 @@ def perform_search(query, debug_container=None):
             return [{'title': r.title, 'body': r.description, 'href': r.url} for r in g_results]
     except Exception as e:
         if debug_container: debug_container.warning(f"Google backend failed: {e}")
+
+    # Attempt 2: API Backend (Fastest DDG)
+    try:
+        if debug_container: debug_container.caption("Attempting Search (API)...")
+        results = DDGS(timeout=30).text(query, max_results=3, backend="api")
+        if results: return results
+    except Exception as e:
+        if debug_container: debug_container.warning(f"API backend failed: {e}")
 
     # Attempt 3: HTML Backend (Scraping, Good Quality)
     try:
