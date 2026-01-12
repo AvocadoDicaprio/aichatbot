@@ -26,15 +26,7 @@ def perform_search(query, debug_container=None):
     except Exception as e:
         if debug_container: debug_container.warning(f"HTML backend failed: {e}")
 
-    # Attempt 3: Lite Backend (Fallback, can be low quality)
-    try:
-        if debug_container: debug_container.caption("Attempting Search (Lite)...")
-        results = DDGS(timeout=30).text(query, max_results=3, backend="lite")
-        if results: return results
-    except Exception as e:
-        if debug_container: debug_container.warning(f"Lite backend failed: {e}")
-
-    # Attempt 4: Google Search (Final Fallback)
+    # Attempt 3: Google Search (High Quality Backup)
     try:
         if debug_container: debug_container.caption("Attempting Google Search...")
         g_results = list(google_search(query, num_results=3, advanced=True))
@@ -42,6 +34,14 @@ def perform_search(query, debug_container=None):
             return [{'title': r.title, 'body': r.description, 'href': r.url} for r in g_results]
     except Exception as e:
         if debug_container: debug_container.warning(f"Google backend failed: {e}")
+
+    # Attempt 4: Lite Backend (Last Resort, can be low quality)
+    try:
+        if debug_container: debug_container.caption("Attempting Search (Lite)...")
+        results = DDGS(timeout=30).text(query, max_results=3, backend="lite")
+        if results: return results
+    except Exception as e:
+        if debug_container: debug_container.warning(f"Lite backend failed: {e}")
     
     return []
 
