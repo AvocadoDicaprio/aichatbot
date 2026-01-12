@@ -1,36 +1,63 @@
 import streamlit as st
 import requests
+import streamlit as st
+import requests
 import json
-from duckduckgo_search import DDGS
-from googlesearch import search as google_search
+from bs4 import BeautifulSoup
 
-def perform_search(query, debug_container=None):
+def manual_search(query, debug_container=None):
     """
-    Robust search function trying multiple backends: DDG API -> HTML -> Lite -> Google.
+    MANUAL SCRAPER: Bypasses library blocks by mimicking a real browser.
     """
     results = []
     
-    # Attempt 1: Google Search (Primary High Quality)
-    try:
-        if debug_container: debug_container.caption("Attempting Google Search...")
-        g_results = list(google_search(query, num_results=3, advanced=True))
-        if g_results:
-            if debug_container: debug_container.success("✅ Results found via Google Search")
-            return [{'title': r.title, 'body': r.description, 'href': r.url} for r in g_results]
-    except Exception as e:
-        if debug_container: debug_container.warning(f"Google backend failed: {e}")
-
-    # Attempt 2: API Backend (Strictly HK Region, Long Timeout)
-    # We removed 'Lite'/'HTML' backends because they return spam/garbage.
-    try:
-        if debug_container: debug_container.caption("Attempting Search (DDG API - HK Region)...")
-        results = DDGS(timeout=60).text(query, max_results=3, backend="api", region="hk-en")
-        if results: 
-            if debug_container: debug_container.success("✅ Results found via DDG API (HK)")
-            return results
-    except Exception as e:
-        if debug_container: debug_container.warning(f"DDG API backend failed: {e}")
+    # 1. Define Real Browser Headers (Verified to work)
+    HEADERS = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Referer": "https://www.google.com/"
+    }
     
+    try:
+        if debug_container: debug_container.caption(f"🕸️ Scraping DDG (HK) directly...")
+        
+        # 2. Direct Request to DuckDuckGo HTML Endpoint (Region: hk-en)
+        url = "https://html.duckduckgo.com/html/"
+        params = {'q': query, 'kl': 'hk-en'} # 'kl' sets region!
+        
+        resp = requests.post(url, data=params, headers=HEADERS, timeout=15)
+        
+        if resp.status_code != 200:
+            if debug_container: debug_container.warning(f"Blocked: HTTP {resp.status_code}")
+            return []
+
+        # 3. Parse HTML with BeautifulSoup
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        
+        # 4. Extract Results (DDG HTML classes are stable)
+        # Each result is in a div with class 'result' (or similar structure)
+        # We look for links in .result__title
+        
+        for result in soup.find_all('div', class_='result', limit=4):
+            title_tag = result.find('a', class_='result__a')
+            snippet_tag = result.find('a', class_='result__snippet')
+            
+            if title_tag and snippet_tag:
+                title = title_tag.get_text(strip=True)
+                href = title_tag.get('href')
+                body = snippet_tag.get_text(strip=True)
+                
+                # Check for junk results?
+                results.append({'title': title, 'body': body, 'href': href})
+
+        if results and debug_container:
+            debug_container.success(f"✅ Found {len(results)} results via Custom Scraper")
+            return results
+
+    except Exception as e:
+        if debug_container: debug_container.error(f"Scraper Error: {e}")
+        
     return []
 
 # Configuration
@@ -184,7 +211,7 @@ if prompt := st.chat_input("What is up?"):
         if st.session_state.enable_search:
             with st.spinner("Searching the web (Retrying multiple backends)..."):
                 try:
-                    results = perform_search(prompt, debug_container if show_debug else None)
+                    results = manual_search(prompt, debug_container if show_debug else None)
                     
                     if results:
                         context_str = "\n".join([f"- **{r['title']}**: {r['body']} ({r['href']})" for r in results])
