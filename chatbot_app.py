@@ -18,15 +18,7 @@ def perform_search(query, debug_container=None):
     except Exception as e:
         if debug_container: debug_container.warning(f"API backend failed: {e}")
 
-    # Attempt 2: HTML Backend (Scraping, Good Quality)
-    try:
-        if debug_container: debug_container.caption("Attempting Search (HTML)...")
-        results = DDGS(timeout=30).text(query, max_results=3, backend="html")
-        if results: return results
-    except Exception as e:
-        if debug_container: debug_container.warning(f"HTML backend failed: {e}")
-
-    # Attempt 3: Google Search (High Quality Backup)
+    # Attempt 2: Google Search (High Quality Backup)
     try:
         if debug_container: debug_container.caption("Attempting Google Search...")
         g_results = list(google_search(query, num_results=3, advanced=True))
@@ -34,6 +26,14 @@ def perform_search(query, debug_container=None):
             return [{'title': r.title, 'body': r.description, 'href': r.url} for r in g_results]
     except Exception as e:
         if debug_container: debug_container.warning(f"Google backend failed: {e}")
+
+    # Attempt 3: HTML Backend (Scraping, Good Quality)
+    try:
+        if debug_container: debug_container.caption("Attempting Search (HTML)...")
+        results = DDGS(timeout=30).text(query, max_results=3, backend="html")
+        if results: return results
+    except Exception as e:
+        if debug_container: debug_container.warning(f"HTML backend failed: {e}")
 
     # Attempt 4: Lite Backend (Last Resort, can be low quality)
     try:
