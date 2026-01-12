@@ -39,7 +39,7 @@ def manual_search(query, debug_container=None):
         # Each result is in a div with class 'result' (or similar structure)
         # We look for links in .result__title
         
-        for result in soup.find_all('div', class_='result', limit=4):
+        for result in soup.find_all('div', class_='result', limit=10):
             title_tag = result.find('a', class_='result__a')
             snippet_tag = result.find('a', class_='result__snippet')
             
@@ -220,7 +220,7 @@ if prompt := st.chat_input("What is up?"):
                         last_msg_content = payload_messages[-1]['content']
                         
                         # STRICT System Prompt
-                        rag_system_prompt = "You are a grounding assistant. You must answer the user's question ONLY using the provided Context below. If the answer is not in the Context, say 'I cannot find the answer in the provided context.' DO NOT EXPLAIN YOUR PLAN. DO NOT SHOW YOUR THINKING. ANSWER DIRECTLY. DO NOT USE YOUR OWN KNOWLEDGE."
+                        rag_system_prompt = "You are a grounding assistant. Answer the user's question detailedly and comprehensively using ONLY the provided Search Results. Synthesize all relevant information. If the answer is not in the results, say 'I cannot find the answer.' DO NOT EXPLAIN YOUR PLAN. DO NOT USE YOUR OWN KNOWLEDGE."
                         
                         # Contextual User Prompt
                         rag_user_prompt = f"Context:\n{context_str}\n\nQuestion: {last_msg_content}"
