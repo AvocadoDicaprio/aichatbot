@@ -2,10 +2,11 @@ import streamlit as st
 import requests
 import json
 from duckduckgo_search import DDGS
+from googlesearch import search as google_search
 
 def perform_search(query, debug_container=None):
     """
-    Robust search function trying multiple backends.
+    Robust search function trying multiple backends: DDG API -> HTML -> Lite -> Google.
     """
     results = []
     
@@ -32,6 +33,15 @@ def perform_search(query, debug_container=None):
         if results: return results
     except Exception as e:
         if debug_container: debug_container.warning(f"Lite backend failed: {e}")
+
+    # Attempt 4: Google Search (Final Fallback)
+    try:
+        if debug_container: debug_container.caption("Attempting Google Search...")
+        g_results = list(google_search(query, num_results=3, advanced=True))
+        if g_results:
+            return [{'title': r.title, 'body': r.description, 'href': r.url} for r in g_results]
+    except Exception as e:
+        if debug_container: debug_container.warning(f"Google backend failed: {e}")
     
     return []
 
