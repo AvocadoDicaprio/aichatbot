@@ -154,14 +154,9 @@ if prompt := st.chat_input("What is up?"):
         if st.session_state.enable_search:
             with st.spinner("Searching the web..."):
                 try:
-                    # Try 'api' backend first (often faster/more reliable)
-                    try:
-                        results = DDGS().text(prompt, max_results=3, backend="api")
-                    except Exception as e_primary:
-                        if show_debug:
-                             debug_container.warning(f"Primary search failed ({e_primary}). Retrying with HTML backend...")
-                        # Fallback to 'html' backend (slower but strictly scraping)
-                        results = DDGS().text(prompt, max_results=3, backend="html")
+                    # 'Lite' backend is the only one confirmed working in this environment.
+                    # 'hk-en' ensures we get local Hong Kong results, not global generic ones.
+                    results = DDGS().text(prompt, max_results=3, region="hk-en", backend="lite")
 
                     if results:
                         context_str = "\n".join([f"- **{r['title']}**: {r['body']} ({r['href']})" for r in results])
