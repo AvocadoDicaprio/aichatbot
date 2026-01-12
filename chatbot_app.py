@@ -3,6 +3,38 @@ import requests
 import json
 from duckduckgo_search import DDGS
 
+def perform_search(query, debug_container=None):
+    """
+    Robust search function trying multiple backends.
+    """
+    results = []
+    
+    # Attempt 1: API Backend (Fastest, Best)
+    try:
+        if debug_container: debug_container.caption("Attempting Search (API)...")
+        results = DDGS(timeout=30).text(query, max_results=3, backend="api")
+        if results: return results
+    except Exception as e:
+        if debug_container: debug_container.warning(f"API backend failed: {e}")
+
+    # Attempt 2: HTML Backend (Scraping, Good Quality)
+    try:
+        if debug_container: debug_container.caption("Attempting Search (HTML)...")
+        results = DDGS(timeout=30).text(query, max_results=3, backend="html")
+        if results: return results
+    except Exception as e:
+        if debug_container: debug_container.warning(f"HTML backend failed: {e}")
+
+    # Attempt 3: Lite Backend (Fallback, can be low quality)
+    try:
+        if debug_container: debug_container.caption("Attempting Search (Lite)...")
+        results = DDGS(timeout=30).text(query, max_results=3, backend="lite")
+        if results: return results
+    except Exception as e:
+        if debug_container: debug_container.warning(f"Lite backend failed: {e}")
+    
+    return []
+
 # Configuration
 # Configuration
 # 1. Open a new terminal and run: ngrok http 11434
@@ -150,47 +182,12 @@ if prompt := st.chat_input("What is up?"):
         # Prepare messages for payload (copy to avoid modifying display)
         payload_messages = list(st.session_state.messages)
         
-def perform_search(query, debug_container=None):
-    """
-    Robust search function trying multiple backends.
-    """
-    results = []
-    
-    # Attempt 1: API Backend (Fastest, Best)
-    try:
-        if debug_container: debug_container.caption("Attempting Search (API)...")
-        results = DDGS(timeout=30).text(query, max_results=3, backend="api")
-        if results: return results
-    except Exception as e:
-        if debug_container: debug_container.warning(f"API backend failed: {e}")
-
-    # Attempt 2: HTML Backend (Scraping, Good Quality)
-    try:
-        if debug_container: debug_container.caption("Attempting Search (HTML)...")
-        results = DDGS(timeout=30).text(query, max_results=3, backend="html")
-        if results: return results
-    except Exception as e:
-        if debug_container: debug_container.warning(f"HTML backend failed: {e}")
-
-    # Attempt 3: Lite Backend (Fallback, can be low quality)
-    try:
-        if debug_container: debug_container.caption("Attempting Search (Lite)...")
-        results = DDGS(timeout=30).text(query, max_results=3, backend="lite")
-        if results: return results
-    except Exception as e:
-        if debug_container: debug_container.warning(f"Lite backend failed: {e}")
-    
-    return []
-
-# App Logic
-# ...
-
         # Web Search Logic
         if st.session_state.enable_search:
             with st.spinner("Searching the web (Retrying multiple backends)..."):
                 try:
                     results = perform_search(prompt, debug_container if show_debug else None)
-
+                    
                     if results:
                         context_str = "\n".join([f"- **{r['title']}**: {r['body']} ({r['href']})" for r in results])
                         
