@@ -181,9 +181,12 @@ if prompt := st.chat_input("What is up?"):
 **Retrieved Context (Top 3):**
 {context_str}
 """
-                        
+                    else:
+                        st.session_state.last_thinking_process = f"**Search Query:** {prompt}\n\n**Result:** No results found."
+
                 except Exception as e:
                     st.error(f"Search Error: {e}")
+                    st.session_state.last_thinking_process = f"**Search Query:** {prompt}\n\n**ERROR:** {e}"
 
         # Prepare the payload for Ollama
         payload = {
